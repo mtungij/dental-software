@@ -7,6 +7,7 @@ use Livewire\Attributes\Computed;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\TreatmentMaster;
+use Carbon\Carbon;
 
 class InvoiceApproval extends Component
 {
@@ -223,6 +224,8 @@ public function approvePaymentInvestigation()
         session()->flash('error', 'Failed to approve payment.');
     }
 }
+
+
 public function approvePaymentMedicine()
 {
     if (!$this->selectedMedicineInvoice) {
@@ -232,6 +235,7 @@ public function approvePaymentMedicine()
 
     \DB::beginTransaction();
     try {
+        // 1. Create Payment record
         Payment::create([
             'invoice_id' => $this->selectedMedicineInvoice->id,
             'patient_id' => $this->selectedMedicineInvoice->queue->patient_id,
@@ -241,23 +245,43 @@ public function approvePaymentMedicine()
             'user_id' => auth()->id(),
         ]);
 
+        // 2. Reduce stock for each medicine in invoice
+        foreach ($this->selectedMedicineInvoice->invoiceItems as $item) {
+            $medicine = $item->medicine; // relation to medicine
+            if ($medicine) {
+                $medicine->total_quantity -= $item->quantity;
+
+                // Prevent negative stock
+                if ($medicine->total_quantity < 0) {
+                    $medicine->total_quantity = 0;
+                }
+
+                $medicine->save();
+            }
+        }
+
+        // 3. Mark invoice as paid
         $this->selectedMedicineInvoice->status = 'paid';
         $this->selectedMedicineInvoice->save();
 
         \DB::commit();
 
-        session()->flash('success', 'Medicine payment approved.');
+        session()->flash('success', 'Medicine payment approved and stock updated.');
 
+        // Close modal and reset
         $this->showMedicineModal = false;
         $this->selectedMedicineInvoice = null;
 
-        $this->loadInvoices(); // refresh invoices
+        // Refresh invoices
+        $this->loadInvoices();
 
     } catch (\Throwable $e) {
         \DB::rollBack();
+        logger()->error('Medicine payment failed: ' . $e->getMessage());
         session()->flash('error', 'Failed to approve payment.');
     }
 }
+
 
 
 #[Computed]
@@ -323,47 +347,51 @@ public function printInvestigation($id)
     /**
      * Get investigation invoices
      */
-    #[Computed]
-    public function getInvestigationInvoices()
-    {
-        return Invoice::with(['queue.patient'])
-            ->whereHas('queue', function ($query) {
-                $query->where('status', 'invoice_created');
-            })
-            ->latest()
-            ->get()
-            ->map(function ($invoice) {
-                $decoded = is_string($invoice->treatments)
-                    ? json_decode($invoice->treatments ?? '[]', true)
-                    : (is_array($invoice->treatments) ? $invoice->treatments : []);
+  #[Computed]
+public function getInvestigationInvoices()
+{
+    return Invoice::with(['queue.patient'])
+        ->whereHas('queue', function ($query) {
+            $query->where('status', 'invoice_created');
+        })
+        ->whereDate('created_at', Carbon::today()) // ⬅️ Only today
+        ->latest()
+        ->get()
+        ->map(function ($invoice) {
+            $decoded = is_string($invoice->treatments)
+                ? json_decode($invoice->treatments ?? '[]', true)
+                : (is_array($invoice->treatments) ? $invoice->treatments : []);
 
-                $treatmentIds = array_keys($decoded);
-                $treatments = TreatmentMaster::whereIn('id', $treatmentIds)->get()->keyBy('id');
+            $treatmentIds = array_keys($decoded);
+            $treatments = TreatmentMaster::whereIn('id', $treatmentIds)->get()->keyBy('id');
 
-                $invoice->treatment_names = collect($decoded)->map(function ($priceType, $treatmentId) use ($treatments) {
-                    $treatment = $treatments->get($treatmentId);
-                    return [
-                        'id' => $treatment?->id,
-                        'name' => $treatment?->name,
-                        'price' => $treatment?->$priceType,
-                        'price_type' => $priceType === 'fast_track_price' ? 'Fast Track Patient' : 'Standard Patient',
-                    ];
-                })->values();
+            $invoice->treatment_names = collect($decoded)->map(function ($priceType, $treatmentId) use ($treatments) {
+                $treatment = $treatments->get($treatmentId);
+                return [
+                    'id' => $treatment?->id,
+                    'name' => $treatment?->name,
+                    'price' => $treatment?->$priceType,
+                    'price_type' => $priceType === 'fast_track_price' ? 'Fast Track Patient' : 'Standard Patient',
+                ];
+            })->values();
 
-                return $invoice;
-            });
-    }
+            return $invoice;
+        });
+}
+
 
     /**
      * Get medicine invoices
      */
-    public function getMedicineInvoices()
-    {
-        return Invoice::with(['queue.patient', 'invoiceItems.medicine'])
-            ->where('price_type', 'medicine')
-            ->latest()
-            ->get();
-    }
+  public function getMedicineInvoices()
+{
+    return Invoice::with(['queue.patient', 'invoiceItems.medicine'])
+        ->where('price_type', 'medicine')
+        ->whereDate('created_at', Carbon::today()) // ⬅️ Only today
+        ->latest()
+        ->get();
+}
+
 
     /**
      * Mount & load invoices

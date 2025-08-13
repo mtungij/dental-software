@@ -54,7 +54,6 @@
             <tr>
               <th class="border border-gray-300 px-3 py-2 text-left">#</th>
               <th class="border border-gray-300 px-3 py-2 text-left">Patient</th>
-              <th class="border border-gray-300 px-3 py-2 text-left">Type</th>
               <th class="border border-gray-300 px-3 py-2 text-left">Amount</th>
               <th class="border border-gray-300 px-3 py-2 text-left">Actions</th>
             </tr>
@@ -64,11 +63,7 @@
               <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
                 <td class="border border-gray-300 px-3 py-2">{{ $index + 1 }}</td>
                 <td class="border border-gray-300 px-3 py-2">{{ $invoice->queue->patient->name ?? '' }}</td>
-                <td class="border border-gray-300 px-3 py-2">
-                  @foreach($invoice->treatment_names as $t)
-                      {{ $t['price_type'] === 'fast_track_price' ? 'Fast Track Patient' : 'Standard Patient' }}
-                  @endforeach
-                </td>
+  
                 <td class="border border-gray-300 px-3 py-2">{{ number_format($invoice->total_amount, 2) }}</td>
                 <td class="border border-gray-300 px-3 py-2 space-x-2">
                   @if($invoice->status === 'paid')
@@ -243,6 +238,81 @@
       </div>
 
       {{-- Modals --}}
+
+      @if ($showInvestigationModal && $selectedInvestigationInvoice)
+<div class="fixed inset-0 bg-opacity-20 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-2xl p-6">
+    <h4 class="text-xl font-bold mb-2">Investigation Invoice</h4>
+    <p>Patient: {{ $selectedInvestigationInvoice->queue->patient->name ?? '—' }}</p>
+    <table class="min-w-full mt-3 border">
+      <thead class="bg-cyan-500 text-white">
+        <tr>
+          <th>Treatment</th>
+          <th>Type</th>
+          <th class="text-right">Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach ($treatments as $t)
+          <tr>
+            <td>{{ $t['name'] }}</td>
+            <td>{{ $t['type'] }}</td>
+            <td class="text-right">{{ number_format($t['price'], 2) }}</td>
+          </tr>
+        @endforeach
+      </tbody>
+      <tfoot>
+        <tr class="font-semibold bg-gray-100">
+          <td colspan="2" class="text-right">Total</td>
+          <td class="text-right">{{ number_format($selectedInvestigationInvoice->total_amount, 2) }}</td>
+        </tr>
+      </tfoot>
+    </table>
+    <div class="mt-4 flex justify-end gap-3">
+      <button wire:click="approvePaymentInvestigation" class="bg-green-500 text-white px-4 py-2 rounded">Approve Payment</button>
+      <button wire:click="$set('showInvestigationModal', false)" class="bg-gray-500 text-white px-4 py-2 rounded">Close</button>
+    </div>
+  </div>
+</div>
+@endif
+
+{{-- Medicine Modal --}}
+@if ($showMedicineModal && $selectedMedicineInvoice)
+<div class="fixed inset-0 bg-opacity-20 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-2xl p-6">
+    <h4 class="text-xl font-bold mb-2">Medicine Invoice</h4>
+    <p>Patient: {{ $selectedMedicineInvoice->queue->patient->name ?? '—' }}</p>
+    <table class="min-w-full mt-3 border">
+      <thead class="bg-cyan-500 text-white">
+        <tr>
+          <th>Medicine</th>
+          <th class="text-right">Qty</th>
+          <th class="text-right">Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach ($selectedMedicineInvoice->invoiceItems ?? [] as $item)
+          <tr>
+            <td>{{ $item->medicine->name ?? '' }}</td>
+            <td class="text-right">{{ $item->quantity }}</td>
+            <td class="text-right">{{ number_format($item->price, 2) }}</td>
+          </tr>
+        @endforeach
+      </tbody>
+      <tfoot>
+        <tr class="font-semibold bg-gray-100">
+          <td class="text-right">Total</td>
+          <td colspan="2" class="text-right">{{ number_format($selectedMedicineInvoice->total_amount, 2) }}</td>
+        </tr>
+      </tfoot>
+    </table>
+    <div class="mt-4 flex justify-end gap-3">
+      <button wire:click="approvePaymentMedicine" class="bg-green-500 text-white px-4 py-2 rounded">Approve Payment</button>
+      <button wire:click="$set('showMedicineModal', false)" class="bg-gray-500 text-white px-4 py-2 rounded">Close</button>
+    </div>
+  </div>
+</div>
+@endif
    
 
     </div>
