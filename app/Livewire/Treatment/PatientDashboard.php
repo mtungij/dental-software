@@ -311,6 +311,7 @@ public function calculateTotal()
     'queue_id' => $this->selectedQueue->id,
     'treatments' => $this->selectedTreatments,
     'total_amount' => $this->total,
+    'type' => 'Investigation',
     'price_type' => $this->price_type,
     'created_by' => Auth::id(),
 ]);

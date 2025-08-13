@@ -90,6 +90,12 @@ Route::middleware(['auth', 'permission:treatment.approval'])->group(function () 
     Route::get('/approval', InvoiceApproval::class)->name('treatment.approval');
 });
 
+  Route::get('/approval/invoice/investigation/print/{id}', [InvoiceApproval::class, 'printInvestigation'])
+        ->name('invoice.investigation.print');
+
+            Route::get('/invoice/medicine/print/{id}', [InvoiceApproval::class, 'printMedicine'])
+        ->name('invoice.medicine.print');
+
 Route::middleware(['auth', 'permission:invoice.print'])->group(function () {
     Route::get('/invoice/print/{id}', InvoiceApproval::class)->name('invoice.print');
 });

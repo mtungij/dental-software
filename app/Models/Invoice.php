@@ -55,6 +55,9 @@ public function queue()
     return $this->belongsTo(Queue::class);
 }
 
+
+
+
     
 
   
