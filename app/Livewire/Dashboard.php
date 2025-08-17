@@ -34,9 +34,17 @@ class Dashboard extends Component
     public $monthlyAppointments = [];
     public function mount()
     {
-        $this->monthlyCount = Appointment::whereMonth('scheduled_at', now()->month)
+        $this->appointments = Appointment::with('patient:id,name')
+        ->whereMonth('scheduled_at', now()->month)
         ->whereYear('scheduled_at', now()->year)
-        ->count();
+        ->get()
+        ->map(function ($appointment) {
+            return [
+                'id'    => $appointment->id,
+                'title' => $appointment->patient->name ?? 'No Name',
+                'start' => $appointment->scheduled_at->toDateTimeString(),
+            ];
+        });
 
         $this->todayPatients = Patient::whereDate('created_at', now())->count();
         $this->totalPatients = Patient::count();
@@ -71,8 +79,11 @@ $todayGrouped = Invoice::select('price_type')
 
 
 
-    public function render()
+        public function render()
     {
-        return view('livewire.dashboard.dashboard');
+        // 👇 pass $appointments explicitly to the Blade view
+        return view('livewire.dashboard.dashboard', [
+            'appointments' => $this->appointments,
+        ]);
     }
 }

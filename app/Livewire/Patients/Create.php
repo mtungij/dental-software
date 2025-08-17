@@ -169,6 +169,8 @@ public function confirmPayment()
 
     // Close the payment confirmation modal
     $this->showPaymentModal = false;
+
+    redirect()->route('patients.invoice', ['invoice' => $invoice->id]);
 }
 
 

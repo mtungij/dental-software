@@ -10,14 +10,13 @@ class DiagnosisList extends Component
 {
     public $queues = [];
 
-   public function mount()
+public function mount()
 {
     $this->queues = Queue::with('patient')
-        ->where('status', 'diagnosing')  // corrected here
+        ->whereIn('status', ['diagnosing', 'under_treatment']) // ✅ multiple statuses
+        ->whereDate('queue_date', now()->toDateString())        // ✅ today’s date
         ->orderBy('updated_at', 'desc')
         ->get();
-
-        // dd($this->queues);
 }
 
 

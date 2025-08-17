@@ -25,6 +25,10 @@ use App\Livewire\Settings\ConsultationFeeSettingsForm;
 use App\Livewire\Reports\ConsultationReport;
 use App\Livewire\Users\ListUsers;
 use App\Livewire\Users\UserCreate ;
+use App\Http\Controllers\InvoiceController;
+use App\Livewire\Reports\Investigations;
+use App\Livewire\Reports\Consultations;
+use App\Livewire\Reports\MedicineReport;
   
 
 use App\Models\Invoice;
@@ -34,8 +38,9 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 })->name('home');
+
 
 Route::middleware(['auth', 'permission:dashboard'])->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
@@ -66,6 +71,10 @@ Route::middleware(['auth', 'permission:queue.manage'])->group(function () {
     Route::get('/reception/queue', QueueManager::class)->name('queue.manage');
 });
 
+Route::middleware(['auth', 'permission:queue.manage'])->group(function () {
+    Route::get('/appointments/calendar', QueueManager::class)->name('appointments.calendar');
+});
+
 Route::middleware(['auth', 'permission:treatments.manage'])->group(function () {
     Route::get('/treatments', TreatmentManager::class)->name('treatments.manage');
 });
@@ -89,6 +98,17 @@ Route::middleware(['auth', 'permission:start-treatment'])->group(function () {
 Route::middleware(['auth', 'permission:treatment.approval'])->group(function () {
     Route::get('/approval', InvoiceApproval::class)->name('treatment.approval');
 });
+
+Route::get('/invoice/{invoice}/pdf', [InvoiceController::class, 'printPdf'])
+     ->name('invoice.pdf');
+
+Route::get('patients/invoices/{invoice}/pdf', [InvoiceController::class, 'printPdf'])
+     ->name('patients.invoice');
+
+     // web.php
+Route::get('/invoice/{invoice}/print', [InvoiceController::class, 'printPdf'])->name('invoice.print');
+
+
 
   Route::get('/approval/invoice/investigation/print/{id}', [InvoiceApproval::class, 'printInvestigation'])
         ->name('invoice.investigation.print');
@@ -126,6 +146,19 @@ Route::middleware(['auth', 'permission:users.list'])->group(function () {
         Route::get('/{patient}/edit', Edit::class)->name('edit');
 });
 
+Route::middleware(['auth', 'permission:investigations.view'])->group(function () {
+    Route::get('/reports/investigations', Investigations::class)
+        ->name('reports.investigations');
+});
+
+Route::middleware(['auth', 'permission:medicines.manage'])->group(function () {
+    Route::get('/medicine-fees/report', MedicineReport::class)->name('medicine.report');
+});
+
+Route::middleware(['auth', 'permission:consultation.payment'])->group(function () {
+    Route::get('/consultation-fees/report', Consultations::class)
+        ->name('consultation.report');
+});
 
     Route::middleware(['auth'])->group(function () {
     Route::get('/ui-components', Components::class)->name('components');
@@ -135,5 +168,6 @@ Route::middleware(['auth', 'permission:users.list'])->group(function () {
     Route::get('settings/password', Password::class)->name('settings.password');
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
 });
+
 
 require __DIR__.'/auth.php';

@@ -61,10 +61,10 @@
           <tbody>
             @forelse ($investigationInvoices as $index => $invoice)
               <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
-                <td class="border border-gray-300 px-3 py-2">{{ $index + 1 }}</td>
-                <td class="border border-gray-300 px-3 py-2">{{ $invoice->queue->patient->name ?? '' }}</td>
-  
-                <td class="border border-gray-300 px-3 py-2">{{ number_format($invoice->total_amount, 2) }}</td>
+                <td class="border border-gray-300 dark:text-gray-200 px-3 py-2">{{ $index + 1 }}</td>
+                <td class="border border-gray-300 dark:text-gray-200 px-3 py-2">{{ $invoice->queue->patient->name ?? '' }}</td>
+
+                <td class="border border-gray-300 dark:text-gray-200 px-3 py-2">{{ number_format($invoice->total_amount, 2) }}</td>
                 <td class="border border-gray-300 px-3 py-2 space-x-2">
                   @if($invoice->status === 'paid')
                     <a href="{{ route('invoice.investigation.print', ['id' => $invoice->id]) }}" 
@@ -87,7 +87,7 @@
         </table>
 
 @if($showTotalsModal)
-<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+<div class="fixed inset-0 bg-opacity-20 backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-50 p-4">
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl p-6">
         
         {{-- Modal Title --}}
@@ -123,7 +123,7 @@
                     @forelse($totalInvoices as $index => $invoice)
                         @php $grandTotal += $invoice->total_amount; @endphp
                         <tr class="{{ $loop->even ? 'bg-gray-50 dark:bg-gray-900' : '' }} hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <td class="px-3 py-2">{{ $index + 1 }}</td>
+                            <td class="px-3 dark:text-gray-200 py-2">{{ $index + 1 }}</td>
                             <td class="px-3 py-2 font-semibold text-gray-800 dark:text-gray-200">
                                 {{ $invoice->queue->patient->name ?? $invoice->patient->name ?? '' }}
                             </td>
@@ -143,7 +143,7 @@
                                         @foreach($invoice->invoiceItems ?? [] as $item)
                                             <li class="text-gray-700 dark:text-gray-300">
                                                 {{ $item->medicine->name ?? '' }} 
-                                                <span class="text-xs text-gray-500">x{{ $item->quantity }}</span>
+                                                <span class="text-xs dark:text-gray-200 text-gray-500">x{{ $item->quantity }}</span>
                                                 – {{ number_format($item->price, 2) }}
                                             </li>
                                         @endforeach
@@ -154,7 +154,7 @@
                                     </span>
                                 @endif
                             </td>
-                            <td class="px-3 py-2 text-right font-medium">{{ number_format($invoice->total_amount, 2) }}</td>
+                            <td class="px-3 py-2 text-right dark:text-gray-200 font-medium">{{ number_format($invoice->total_amount, 2) }}</td>
                             <td class="px-3 py-2 capitalize">
                                 <span class="{{ $invoice->status === 'paid' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
                                     {{ $invoice->status }}
@@ -170,8 +170,8 @@
                 @if($totalInvoices->count())
                 <tfoot class="sticky bottom-0 bg-gray-200 dark:bg-gray-700 font-bold shadow-inner">
                     <tr>
-                        <td colspan="3" class="px-3 py-2 text-right">Grand Total:</td>
-                        <td class="px-3 py-2 text-right">{{ number_format($grandTotal, 2) }}</td>
+                        <td colspan="3" class="px-3 py-2 dark:text-gray-200 text-right">Grand Total:</td>
+                        <td class="px-3 py-2 dark:text-gray-200 text-right">{{ number_format($grandTotal, 2) }}</td>
                         <td></td>
                     </tr>
                 </tfoot>
@@ -212,10 +212,10 @@
           <tbody>
             @forelse ($medicineInvoices as $index => $invoice)
               <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
-                <td class="border border-gray-300 px-3 py-2">{{ $index + 1 }}</td>
-                <td class="border border-gray-300 px-3 py-2">{{ $invoice->queue->patient->name ?? '' }}</td>
-                <td class="border border-gray-300 px-3 py-2">{{ number_format($invoice->total_amount, 2) }}</td>
-                <td class="border border-gray-300 px-3 py-2 space-x-2">
+                <td class="border dark:text-gray-200  border-gray-300 px-3 py-2">{{ $index + 1 }}</td>
+                <td class="border dark:text-gray-200 border-gray-300 px-3 py-2">{{ $invoice->queue->patient->name ?? '' }}</td>
+                <td class="border dark:text-gray-200 border-gray-300 px-3 py-2">{{ number_format($invoice->total_amount, 2) }}</td>
+                <td class="border dark:text-gray-200 border-gray-300 px-3 py-2 space-x-2">
                   @if($invoice->status === 'paid')
                     <a href="{{ route('invoice.medicine.print', ['id' => $invoice->id]) }}" 
                        target="_blank"
@@ -241,8 +241,8 @@
 
       @if ($showInvestigationModal && $selectedInvestigationInvoice)
 <div class="fixed inset-0 bg-opacity-20 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
-  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-2xl p-6">
-    <h4 class="text-xl font-bold mb-2">Investigation Invoice</h4>
+  <div class="bg-white dark:bg-gray-200 rounded-lg shadow-lg w-full max-w-2xl p-6">
+    <h4 class="text-xl font-bold dark:text-gray-200 mb-2">Investigation Invoice</h4>
     <p>Patient: {{ $selectedInvestigationInvoice->queue->patient->name ?? '—' }}</p>
     <table class="min-w-full mt-3 border">
       <thead class="bg-cyan-500 text-white">

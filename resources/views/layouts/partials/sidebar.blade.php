@@ -182,23 +182,23 @@
 </a>
 
 
-             <li>
+             <!-- <li>
                 <a @class(['flex items-center gap-x-3.5 py-2 px-2.5 text-sm rounded-lg', 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-white' => request()->routeIs('components'), 'text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900 dark:text-gray-400 dark:hover:text-gray-300' => !request()->routeIs('components')])
                    href="{{ route('components') }}"
                 >
                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>
                     UI Components
                 </a>
-            </li>
+            </li> -->
 
             {{-- Inbox --}}
-            <li>
+            <!-- <li>
                  <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-900 dark:text-gray-400 dark:hover:text-gray-300" href="#">
                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.012-1.244h3.86M4.5 3h15M4.5 7.5h15M4.5 12h15" /></svg>
                     Inbox
                      <span class="ms-auto inline-flex items-center gap-x-1.5 py-0.5 px-1.5 rounded-full text-xs font-medium bg-cyan-500 text-white">12</span>
                 </a>
-            </li>
+            </li> -->
 
           <li>
     <a 
@@ -217,7 +217,7 @@
 
 
             {{-- 1-Level Accordion (Favorites) --}}
-            <li class="hs-accordion" id="favorites-accordion">
+            <!-- <li class="hs-accordion" id="favorites-accordion">
                 <button type="button" class="hs-accordion-toggle w-full text-start flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-900 dark:text-gray-400 dark:hover:text-gray-300">
                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" /></svg>
                     Favorites
@@ -231,7 +231,7 @@
                         <li><a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-900 dark:text-gray-400 dark:hover:text-gray-300" href="#">Brand Guidelines</a></li>
                     </ul>
                 </div>
-            </li>
+            </li> -->
         
                 <li class="hs-accordion" id="favorites-accordion">
                 <button type="button" class="hs-accordion-toggle w-full text-start flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-900 dark:text-gray-400 dark:hover:text-gray-300">
@@ -255,9 +255,22 @@
     </a>
 </li>
 <li>
-    <a href="#" {{-- Replace with appropriate route --}}
+  @can('investigations.view')
+    <a    class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-900 dark:text-gray-400 dark:hover:text-gray-300" href="{{ route('reports.investigations') }}">View Investigations Report</a>
+@endcan
+</li>
+
+<li>
+    <a href="{{ route('consultation.report') }}"
        class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-900 dark:text-gray-400 dark:hover:text-gray-300">
-        Patient Reports
+        View Consultations Report
+    </a>
+</li>
+
+<li>
+    <a href="{{ route('medicine.report') }}"
+       class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-900 dark:text-gray-400 dark:hover:text-gray-300">
+        View Medicine Report
     </a>
 </li>
 

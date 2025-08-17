@@ -1,29 +1,21 @@
-<div>
+<div class="mx-auto max-w-md">
     <div class="text-center">
         <h1 class="block text-2xl font-bold text-gray-800 dark:text-white">{{ __('Log in to your account') }}</h1>
-        @if (Route::has('register'))
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                {{ __('Don\'t have an account yet?') }}
-                <a class="text-cyan-600 decoration-2 hover:underline focus:outline-hidden focus:underline font-medium dark:text-cyan-500" href="{{ route('register') }}" wire:navigate>
-                    {{ __('Sign up here') }}
-                </a>
-            </p>
-        @endif
+       
     </div>
 
     <div class="mt-5">
-        <!-- Session Status -->
-        <!-- <x-auth-session-status class="mb-4" :status="session('status')" /> -->
+      
 @if ($errors->has('email'))
     <div class="mb-4 p-3 bg-red-200 text-red-800 rounded dark:bg-red-900 dark:text-red-300 text-sm text-center">
         {{ $errors->first('email') }}
     </div>
 @endif
 
-        <!-- Form -->
+   
         <form wire:submit="login">
             <div class="grid gap-y-4">
-                <!-- Email Form Group -->
+               
                 <div>
                     <label for="email" class="block text-sm mb-2 dark:text-white">{{ __('Email address') }}</label>
                     <div class="relative">
@@ -54,14 +46,7 @@
 
                 <!-- Password Form Group -->
                 <div>
-                    <div class="flex flex-wrap justify-between items-center gap-2">
-                        <label for="password" class="block text-sm mb-2 dark:text-white">{{ __('Password') }}</label>
-                        @if (Route::has('password.request'))
-                            <a class="inline-flex items-center gap-x-1 text-sm text-cyan-600 decoration-2 hover:underline focus:outline-hidden focus:underline font-medium dark:text-cyan-500" href="{{ route('password.request') }}" wire:navigate>
-                                {{ __('Forgot your password?') }}
-                            </a>
-                        @endif
-                    </div>
+                  
                     <div class="relative">
                         <input type="password"
                                id="password"

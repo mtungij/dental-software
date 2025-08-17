@@ -10,12 +10,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <!-- FullCalendar CSS -->
 <!-- FullCalendar CSS -->
 <!-- In <head> -->
-
-
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     {!! ToastMagic::styles() !!}
 
@@ -104,9 +105,14 @@ input[type="checkbox"]:not(:checked)::after {
 <header class="sticky top-0 inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full bg-white border-b border-gray-200 text-sm py-3 sm:py-0 dark:bg-gray-800 dark:border-gray-700">
     <nav class="relative w-full mx-auto px-4 sm:flex sm:items-center sm:justify-end sm:gap-4 sm:px-6 lg:px-8 py-4" aria-label="Global">
         <div class="flex items-center gap-4">
-            <a class="flex-none text-xl font-semibold dark:text-white" href="{{ route('dashboard') }}" aria-label="Brand">
-                 <x-app-logo-icon class="h-8 w-auto fill-current text-black dark:text-white" />
-            </a>
+        <a class="flex-none text-xl font-semibold dark:text-white" 
+   href="{{ route('dashboard') }}" 
+   aria-label="Brand">
+    <img src="{{ asset('images/logo.png') }}" 
+         alt="Logo" 
+         class="h-8 w-auto">
+</a>
+
             <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">
                 <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
                 <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
@@ -323,6 +329,44 @@ window.addEventListener('call-patient', event => {
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<script>
+    window.addEventListener('open-invoice', event => {
+        const url = event.detail.url;
+        const win = window.open(url, '_blank');
+        if (win) win.focus();
+    });
+</script>
+
+<!-- 
+<script>
+function printConsultation(name, type, fee) {
+    const content = `
+        <div style="font-family: sans-serif; padding: 20px;">
+            <h2>Consultation Fee</h2>
+            <p><strong>Patient Name:</strong> ${name}</p>
+            <p><strong>Patient Type:</strong> ${type}</p>
+            <p><strong>Amount:</strong> ${fee} TZS</p>
+        </div>
+    `;
+
+    const printWindow = window.open('', '', 'width=600,height=400');
+    printWindow.document.write(content);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+
+    // Hide the print button and recent patient info after printing
+    Livewire.emit('hideRecentPatient');
+}
+</script> -->
+
+
+
+
+
 
 
 

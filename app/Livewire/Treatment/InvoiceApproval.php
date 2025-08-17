@@ -8,6 +8,7 @@ use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\TreatmentMaster;
 use Carbon\Carbon;
+use App\Models\Queue;
 
 class InvoiceApproval extends Component
 {
@@ -205,6 +206,12 @@ public function approvePaymentInvestigation()
         $this->selectedInvestigationInvoice->save();
 
         \DB::commit();
+
+            Queue::create([
+                'patient_id' => $this->selectedInvestigationInvoice->queue->patient_id,
+                'status' => 'under_treatment',
+                'queue_date' => now()->toDateString(), // today's date
+            ]);  
 
         session()->flash('success', 'Investigation payment approved.');
 

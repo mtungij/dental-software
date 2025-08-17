@@ -23,6 +23,9 @@ use Illuminate\Support\Facades\Auth;
 class PatientDashboard extends Component
 {
 
+    public $treatmentSearch = '';
+public $treatmentResults = [];
+
 
     public $selectedQueue;
     public $treatments;
@@ -77,17 +80,33 @@ public $selectedMedicineId;
 
     public function mount(Queue $queue)
     {
-        $this->selectedTreatments = [];
+     $this->selectedTreatments = [];
     $this->totalAmount = 0;
 
+    // Load queue with patient
     $this->selectedQueue = $queue::with('patient')->find($queue->id);
-    $this->treatments = TreatmentMaster::all();
+
+    // Get the patient type from the queue
+    $this->patientType = $this->selectedQueue->patient->type ?? 'standard';
+
+    // Filter treatments based on patient type
+    $this->treatments = TreatmentMaster::all()->map(function ($treatment) {
+        // Add price according to patient type
+        if ($this->patientType === 'fast_track') {
+            $treatment->display_price = $treatment->fast_track_price;
+            $treatment->price_type = 'fast_track_price';
+        } else {
+            $treatment->display_price = $treatment->price; // standard price
+            $treatment->price_type = 'price';
+        }
+        return $treatment;
+    });
 // dd($this->selectedQueue);
     // Get the patient type from the queue
     $this->patientType = $this->selectedQueue->patient->type ?? 'standard';
 // dd($patientType);
     // Filter medicines based on patient type
-$type = $this->patientType;
+// $type = $this->patientType;
 
 $this->medicines = Medicine::all()->map(function ($medicine) {
     $medicine->price = $medicine->sell_price;
@@ -100,6 +119,7 @@ $this->medicines = Medicine::all()->map(function ($medicine) {
 
     }
 
+    
 
 public function addToCart()
 {
@@ -291,7 +311,13 @@ public function calculateTotal()
 
         $this->total += $selectedType === 'fast_track_price' ? $treatment->fast_track_price : $treatment->price;
     }
+
+
+
 }
+
+
+
 
  public function submitInvoice()
 {

@@ -233,52 +233,55 @@
       </div>
 
       <!-- Investigation -->
-      <div x-data @price-type-mix-error.window="alert('Mixed price types are not allowed!')" id="investigation" class="tab-content hidden">
-        <h3 class="text-lg font-medium mb-4 text-gray-700 dark:text-gray-300">Select Treatments</h3>
+     <div x-data @price-type-mix-error.window="alert('Mixed price types are not allowed!')" id="investigation" class="tab-content hidden">
+    <h3 class="text-lg font-medium mb-4 text-gray-700 dark:text-gray-300">Select Treatments</h3>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          @foreach ($treatments as $treatment)
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        @foreach ($treatments as $treatment)
             <div class="p-4 border rounded-md shadow-sm bg-white dark:bg-gray-900">
-              <h4 class="font-semibold text-gray-900 dark:text-white">{{ $treatment->name }}</h4>
+                <h4 class="font-semibold text-gray-900 dark:text-white">{{ $treatment->name }}</h4>
 
-              <div class="text-sm text-gray-700 dark:text-gray-300 mt-2 space-y-2">
-                <label class="flex items-center space-x-2">
-                  <input type="radio"
-                         name="selectedTreatment_{{ $treatment->id }}"
-                         wire:model.live="selectedTreatments.{{ $treatment->id }}"
-                         value="price">
-                  <span>Normal Price: TZS {{ number_format($treatment->price, 0) }}</span>
-                </label>
+                <div class="text-sm text-gray-700 dark:text-gray-300 mt-2 space-y-2">
+                    @if($patientType === 'standard')
+                        <label class="flex items-center space-x-2">
+                            <input type="radio"
+                                   name="selectedTreatment_{{ $treatment->id }}"
+                                   wire:model.defer="selectedTreatments.{{ $treatment->id }}"
+                                   value="price">
+                            <span>Normal Price: TZS {{ number_format($treatment->price, 0) }}</span>
+                        </label>
+                    @else
+                        <label class="flex items-center space-x-2">
+                            <input type="radio"
+                                   name="selectedTreatment_{{ $treatment->id }}"
+                                   wire:model.defer="selectedTreatments.{{ $treatment->id }}"
+                                   value="fast_track_price">
+                            <span>Fast Track Price: TZS {{ number_format($treatment->fast_track_price, 0) }}</span>
+                        </label>
+                    @endif
 
-                <label class="flex items-center space-x-2">
-                  <input type="radio"
-                         name="selectedTreatment_{{ $treatment->id }}"
-                         wire:model.live="selectedTreatments.{{ $treatment->id }}"
-                         value="fast_track_price">
-                  <span>Fast Track Price: TZS {{ number_format($treatment->fast_track_price, 0) }}</span>
-                </label>
-
-                @if($treatment->description)
-                  <p class="italic mt-2 text-gray-500 dark:text-gray-400">
-                    {{ $treatment->description }}
-                  </p>
-                @endif
-              </div>
+                    @if($treatment->description)
+                        <p class="italic mt-2 text-gray-500 dark:text-gray-400">
+                            {{ $treatment->description }}
+                        </p>
+                    @endif
+                </div>
             </div>
-          @endforeach
-        </div>
+        @endforeach
+    </div>
 
-        <div class="mt-6 text-right">
-          <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">
-            Total: TZS {{ number_format($total, 0) }}
-          </p>
+    <div class="mt-6 text-right">
+        <!-- <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">
+            Total: TZS 
+        </p> -->
 
-          <button wire:click="submitInvoice"
-                  class="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        <button wire:click="submitInvoice"
+                class="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
             Submit Invoice
-          </button>
-        </div>
-      </div>
+        </button>
+    </div>
+</div>
+
 
       <!-- Examination -->
    <div id="examination" class="tab-content hidden p-6 bg-white rounded shadow-md space-y-6 dark:bg-gray-800">
@@ -454,8 +457,8 @@
 
     <div class="col-span-12 mb-4">
       <label for="medicineSelect" class="block text-sm font-medium mb-2 dark:text-gray-300">* Search Medicine:</label>
-   <select wire:model="selectedMedicineId" id="medicineSelect" required name="medicine_id"
-    class="py-3 px-4 block w-full bg-cyan-600 border-gray-200 rounded-lg text-sm focus:border-cyan-500 focus:ring-cyan-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-400">
+   <select wire:model="selectedMedicineId" required name="medicine_id"
+    class=" select2-cat py-3 px-4 block w-full bg-cyan-600 border-gray-200 rounded-lg text-sm focus:border-cyan-500 focus:ring-cyan-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-400">
     <option value="">Select Medicine</option>
     @foreach ($medicines as $medicine)
       <option value="{{ $medicine->id }}">
@@ -671,4 +674,82 @@
       </div>
     </div>
   </div>
+
+  
 </div>
+@script
+<script type="text/javascript">
+document.addEventListener("livewire:initialized", function () {
+
+    function initSelect2() {
+        $('.select2-cat').each(function () {
+            let $el = $(this);
+            let model = $el.attr('wire:model');
+
+            // Destroy previous instance if exists
+            if ($el.hasClass("select2-hidden-accessible")) {
+                $el.select2('destroy');
+            }
+
+            // Determine mode
+            let isDark = document.body.classList.contains('dark');
+
+            // Initialize Select2
+            $el.select2({
+                width: '100%',
+                dropdownCssClass: isDark ? 'select2-dark' : '',
+                containerCssClass: isDark ? 'select2-dark' : ''
+            }).on('change', function () {
+                if (model) {
+                    @this.set(model, $(this).val());
+                }
+            });
+        });
+    }
+
+    initSelect2();
+
+    // Re-init after Livewire DOM updates
+    Livewire.hook("morphed", () => {
+        initSelect2();
+    });
+
+    // Observe body class changes for dark mode toggle
+    const observer = new MutationObserver(() => {
+        initSelect2();
+    });
+
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+});
+</script>
+
+<style>
+/* Dark mode Select2 styling */
+.select2-dark .select2-selection {
+    background-color: #1f2937; /* Tailwind gray-800 */
+    color: #f3f4f6; /* Tailwind gray-200 */
+    border: 1px solid #374151; /* Tailwind gray-700 */
+}
+
+.select2-dark .select2-selection__placeholder {
+    color: #9ca3af; /* Tailwind gray-400 */
+}
+
+.select2-dark .select2-dropdown {
+    background-color: #1f2937; /* gray-800 */
+    color: #f3f4f6; /* gray-200 */
+}
+
+.select2-dark .select2-results__option--highlighted {
+    background-color: #2563eb; /* blue-600 */
+    color: white;
+}
+
+.select2-dark .select2-selection__arrow b {
+    border-color: #f3f4f6 transparent transparent transparent;
+}
+</style>
+@endscript
+
+

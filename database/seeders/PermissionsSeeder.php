@@ -19,7 +19,7 @@ class PermissionsSeeder extends Seeder
         'consultation.payment' => 'Set Consultation Payment',
         'queue.manage' => 'Set Manage Queue',
         'treatments.manage' => 'Set Manage Treatments',
-        'appointments.calendar' => 'Set Appointments Calendar',
+        'appointments.calendar' => 'View Appointments Calendar',
         'treatment.manage' => 'Manage Treatment',
         'diagnosis.patients' => 'Patient Diagnosis',
         'start-treatment' => 'Start Treatment',
@@ -30,6 +30,13 @@ class PermissionsSeeder extends Seeder
         'medicines.manage' => 'Manage Medicines',
         'users.create' => 'Create Users',
         'users.list' => 'List Users',
+        'investigations.view' => 'View General Investigations Report',
+        'consultation.report' => 'View General Consultation Fees Report',
+          'medicine.report' => 'View Medicine Sold Report',
+        'invoice.investigation.print' => 'Print Investigation Invoice',
+        'invoice.medicine.print' => 'Print Medicine Invoice',
+        
+
     ];
 
     foreach ($permissionsWithLabels as $name => $label) {

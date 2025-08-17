@@ -82,8 +82,8 @@
 <body>
     <div class="header">
         <h2>Vunja Dental Clinic</h2>
-        <p>Morogoro, Tanzania</p>
-        <p>Phone: 07123489768 | Email: mtungi@gmail.com</p>
+        <p>Morogoro, Madizini Road Turiani</p>
+        <p>Phone: 0787261617 | 0652595979</p>
     </div>
 
     <div class="content">
@@ -114,7 +114,7 @@
     </div>
 
     <div class="footer">
-        <p>God will heal you</p>
+        <p>Smile confidently with us</p>
     </div>
 
     <script>
